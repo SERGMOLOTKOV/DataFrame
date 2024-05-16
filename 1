@@ -1,0 +1,30 @@
+import pandas as pd
+import random
+
+# Создаем исходный DataFrame
+lst = ['robot'] * 10 + ['human'] * 10
+random.shuffle(lst)
+data = pd.DataFrame({'whoAmI': lst})
+
+# Создаем функцию для one hot кодирования
+def one_hot_encode(column):
+    # Создаем DataFrame для кодирования
+    one_hot = pd.DataFrame()
+    # Для каждой уникальной категории в столбце
+    for category in column.unique():
+        # Создаем новый столбец с названием категории
+        # Присваиваем 1, если значение совпадает с категорией, иначе 0
+        one_hot['is_' + category] = column.apply(lambda x: 1 if x == category else 0)
+    return one_hot
+
+# Применяем функцию к столбцу 'whoAmI'
+encoded_data = one_hot_encode(data['whoAmI'])
+
+# Объединяем исходный DataFrame с one hot кодированными данными
+final_data = pd.concat([data, encoded_data], axis=1)
+
+# Удаляем исходный столбец 'whoAmI', так как он больше не нужен
+final_data.drop('whoAmI', axis=1, inplace=True)
+
+# Выводим первые пять строк получившегося DataFrame
+print(final_data.head())
